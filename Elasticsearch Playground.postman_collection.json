@@ -1,0 +1,221 @@
+{
+	"info": {
+		"name": "Elasticsearch Playground",
+		"_postman_id": "f0b66593-2699-7503-8ed3-97ebd465a3fd",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Hello World",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:9200/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Show indices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:9200/_aliases",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"_aliases"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create index",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"settings\" : {\n        \"number_of_shards\" : 2\n    },\n    \"mappings\" : {\n        \"games\" : {\n            \"properties\" : {\n                \"title\" : { \"type\" : \"text\" },\n                \"category\": { \"type\": \"keyword\" }\n            }\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9200/content",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"content"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete index",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:9200/content",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"content"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk insert",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"index\" : { \"_index\" : \"content\", \"_type\" : \"games\" } }\n{ \"title\" : \"Binding of Isaac: Afterbirth\", \"category\": [\"roguelike\", \"shooter\", \"nicalis\"] }\n{ \"index\" : { \"_index\" : \"content\", \"_type\" : \"games\"} }\n{ \"title\" : \"Mario Kart 8\", \"category\": [\"racing\", \"shooter\", \"not a simulator\"] }\n{ \"index\" : { \"_index\" : \"content\", \"_type\" : \"games\" } }\n{ \"title\" : \"Stardew valley\", \"category\": [\"sim\", \"indie\"] } \n"
+				},
+				"url": {
+					"raw": "http://localhost:9200/_bulk",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"_bulk"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get all docs",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"query\" : {\n        \"match_all\" : {}\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9200/content/_search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"content",
+						"_search"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Fuzzy search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": {\n    \"query_string\": {\n      \"default_field\": \"title\",\n      \"query\": \"isaac\"\n    }\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9200/content/_search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"content",
+						"_search"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Must / Must not search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        {\n          \"match\": {\n            \"category\": \"shooter\"\n          }\n        }\n      ],\n      \"must_not\": [\n        {\n          \"match\": {\n            \"category\": \"racing\"\n          }\n        }\n      ],\n      \"should\": [\n        {\n          \"match\": {\n            \"category\": \"game-of-the-year\"\n          }\n        }\n      ]\n    }\n  }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9200/content/_search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"content",
+						"_search"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
